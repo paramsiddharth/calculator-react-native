@@ -14,8 +14,9 @@ import {
   Button,
   TouchableOpacity
 } from 'react-native';
-
 import FadeInOut from 'react-native-fade-in-out';
+
+import Icon from 'react-native-vector-icons/Feather';
 
 const btns = [
   [1, 2, 3],
@@ -63,12 +64,15 @@ const App: () => React$Node = () => {
         if (typeof text === 'number') {
           return setResult(result + text);
         } else if (Object.keys(ops).includes(text)) {
-          if (result.length < 1)
+          if (result.length < 1 && text !== '-')
             return;
 
           const lastChar = result.substr(result.length - 1, 1);
           
-          if (Object.keys(ops).includes(lastChar)) 
+          if (
+            Object.keys(ops).includes(lastChar) && text !== '-'
+            || lastChar === '-' && text === '-'
+          ) 
             return setResult(result.substr(0, result.length - 1) + text);
 
           if (lastChar === '.')
@@ -97,12 +101,24 @@ const App: () => React$Node = () => {
         );
       }
       
+      if (calc === Number.POSITIVE_INFINITY) {
+        return setCalculation(
+          <Text style={{ color: 'pink' }}>∞</Text>
+        );
+      }
+      
+      if (calc === Number.NEGATIVE_INFINITY) {
+        return setCalculation(
+          <Text style={{ color: 'pink' }}>-∞</Text>
+        );
+      }
+      
       if (calc != null) {
         return setCalculation(calc);
       }
     } catch(e) {
       setCalculation(
-        <Text style={{ color: 'red' }}>Invalid input</Text>
+        <Text style={{ color: '#e45289' }}>Invalid input</Text>
       );
     }
   };
@@ -141,7 +157,9 @@ const App: () => React$Node = () => {
         }, TIMEOUT);
       }}
       style={styles.btnRow}>
-      <Text style={styles.btnText}>{Object.keys(ops)[0]}</Text>
+      <Icon name='delete'
+        size={styles.btnText.fontSize / 1.2}
+        />
     </TouchableOpacity>
   );
 
@@ -159,14 +177,18 @@ const App: () => React$Node = () => {
     <>
       <View style={styles.container}>
         <View style={styles.result}>
-          <FadeInOut visible={visible} duration={TIMEOUT}>
+          <FadeInOut visible={visible}
+            scale
+            duration={TIMEOUT}>
             <Text style={styles.resultText}>
               {result}
             </Text>
           </FadeInOut>
         </View>
         <View style={styles.calculation}>
-          <FadeInOut visible={visible} duration={TIMEOUT}>
+          <FadeInOut visible={visible}
+            scale
+            duration={TIMEOUT}>
             <Text style={styles.calculationText}>
               {calculation}
             </Text>
