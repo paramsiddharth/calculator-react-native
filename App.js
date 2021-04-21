@@ -15,6 +15,8 @@ import {
   TouchableOpacity
 } from 'react-native';
 
+import FadeInOut from 'react-native-fade-in-out';
+
 const btns = [
   [1, 2, 3],
   [4, 5, 6],
@@ -30,7 +32,11 @@ const ops = {
   '+': '+'
 };
 
+const TIMEOUT = 200; // Milliseconds
+
 const App: () => React$Node = () => {
+  const [visible, setVisible] = useState<Boolean>(true);
+
   const [result, setResult] = useState<String>('');
   const [calculation, setCalculation] = useState(null);
 
@@ -127,8 +133,12 @@ const App: () => React$Node = () => {
     <TouchableOpacity key={0}
       onPress={() => buttonPressed(Object.keys(ops)[0])}
       onLongPress={() => {
-        setResult('');
-        setCalculation('');
+        setVisible(false);
+        setTimeout(() => {
+          setResult('');
+          setCalculation('');
+          setVisible(true);
+        }, TIMEOUT);
       }}
       style={styles.btnRow}>
       <Text style={styles.btnText}>{Object.keys(ops)[0]}</Text>
@@ -149,14 +159,18 @@ const App: () => React$Node = () => {
     <>
       <View style={styles.container}>
         <View style={styles.result}>
-          <Text style={styles.resultText}>
-            {result}
-          </Text>
+          <FadeInOut visible={visible} duration={TIMEOUT}>
+            <Text style={styles.resultText}>
+              {result}
+            </Text>
+          </FadeInOut>
         </View>
         <View style={styles.calculation}>
-          <Text style={styles.calculationText}>
-            {calculation}
-          </Text>
+          <FadeInOut visible={visible} duration={TIMEOUT}>
+            <Text style={styles.calculationText}>
+              {calculation}
+            </Text>
+          </FadeInOut>
         </View>
         <View style={styles.buttons}>
           <View style={styles.numbers}>
