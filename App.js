@@ -197,28 +197,28 @@ const styles = StyleSheet.create({
     fontSize: 35
   },
   result: {
-    flex: 2,
+    flex: 1.7,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-end',
-    backgroundColor: 'red'
+    backgroundColor: '#6b3a8f'
   },
   resultText: {
-    fontSize: 30,
+    fontSize: 58,
     color: 'white',
     paddingRight: 6,
     fontFamily: 'monospace'
   },
   calculation: {
-    flex: 1,
+    flex: 1.3,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-end',
-    backgroundColor: 'green'
+    backgroundColor: '#542e71'
   },
   calculationText: {
-    fontSize: 24,
+    fontSize: 38,
     color: 'white',
     paddingRight: 6
   },
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     flex: 7,
     flexDirection: 'row',
     display: 'flex',
-    backgroundColor: 'yellow'
+    backgroundColor: '#fdca40'
   },
   numbers: {
     flex: 3,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   operations: {
     flex: 1,
     display: 'flex',
-    backgroundColor: 'blue',
+    backgroundColor: '#fb3640',
     flexDirection: 'column',
     alignItems: 'stretch'
   }
