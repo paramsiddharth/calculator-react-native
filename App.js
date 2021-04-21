@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,24 +15,103 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-const ops = [
-  '÷',
-  '×',
-  '-',
-  '+'
+const btns = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+  ['.', 0, '=']
 ];
 
-// @ts-ignore
+const ops = {
+  '<': null,
+  '÷': '/',
+  '×': '*',
+  '-': '-',
+  '+': '+'
+};
+
 const App: () => React$Node = () => {
+  const [result, setResult] = useState<String>('');
+  const [calculation, setCalculation] = useState(null);
+
+  const buttonPressed = text => {
+    switch (text) {
+      case '<':
+        if (result == '')
+          return;
+        
+        return setResult(result.substr(0, result.length - 1));
+      case '=':
+        return calculate(text);
+      case '.':
+        if (result.length < 1)
+          return;
+        
+        const lastChar = result.substr(result.length - 1, 1);
+        
+        if (lastChar === '.' || Object.keys(ops).includes(lastChar))
+          return;
+        
+        return setResult(result + text);
+      default:
+        if (typeof text === 'number') {
+          return setResult(result + text);
+        } else if (Object.keys(ops).includes(text)) {
+          if (result.length < 1)
+            return;
+
+          const lastChar = result.substr(result.length - 1, 1);
+          
+          if (Object.keys(ops).includes(lastChar)) 
+            return setResult(result.substr(0, result.length - 1) + text);
+
+          if (lastChar === '.')
+            return setResult(result + '0' + text);
+
+          return setResult(result + text);
+        }
+    }
+  };
+
+  const calculate = text => {
+    if (result == '')
+      return setCalculation('');
+    try {
+      let toCalculate = result;
+      
+      for (const op in ops) {
+        toCalculate = toCalculate.replace(new RegExp(op.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&'), 'ig'), ops[op]);
+      }
+
+      const calc = new Function(`return ${toCalculate};`)();
+      
+      if (Number.isNaN(calc)) {
+        return setCalculation(
+          <Text style={{ color: 'pink' }}>Not a number</Text>
+        );
+      }
+      
+      if (calc != null) {
+        return setCalculation(calc);
+      }
+    } catch(e) {
+      setCalculation(
+        <Text style={{ color: 'red' }}>Invalid input</Text>
+      );
+    }
+  };
+
   let numbers = [], operations = [];
 
-  for (let r = 1; r < 3 * 3 + 1; r += 3) {
+  for (let r = 0; r < btns.length; r++) {
     let row = [];
     
-    for (let c = 0; c < 3; c++) {
+    for (let c = 0; c < btns[r].length; c++) {
       row.push(
-        <TouchableOpacity key={c} style={styles.btnColumn}>
-          <Text style={styles.btnText}>{r + c}</Text>
+        <TouchableOpacity key={c}
+          onPress={() => buttonPressed(btns[r][c])}
+          style={styles.btnColumn}>
+          <Text style={styles.btnText}>{btns[r][c]}</Text>
         </TouchableOpacity>
       );
     }
@@ -44,35 +123,12 @@ const App: () => React$Node = () => {
     );
   }
 
-  numbers.push(
-    <View key={3} style={styles.row}>
-      <TouchableOpacity style={styles.btnColumn0}>
-        <View style={{
-          display: 'flex',
-          flexDirection: 'row'
-        }}>
-          <Text style={{
-            ...styles.btnText,
-            flex: 1,
-            textAlign: 'center'
-          }}></Text>
-          <Text style={{
-            ...styles.btnText,
-            flex: 1,
-            textAlign: 'center'
-          }}>0</Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.btnColumn}>
-        <Text style={styles.btnText}>.</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < Object.keys(ops).length; i++) {
     operations.push(
-      <TouchableOpacity key={i} style={styles.btnRow}>
-        <Text style={styles.btnText}>{ops[i]}</Text>
+      <TouchableOpacity key={i}
+        onPress={() => buttonPressed(Object.keys(ops)[i])}
+        style={styles.btnRow}>
+        <Text style={styles.btnText}>{Object.keys(ops)[i]}</Text>
       </TouchableOpacity>
     );
   }
@@ -82,12 +138,12 @@ const App: () => React$Node = () => {
       <View style={styles.container}>
         <View style={styles.result}>
           <Text style={styles.resultText}>
-            120+3
+            {result}
           </Text>
         </View>
         <View style={styles.calculation}>
           <Text style={styles.calculationText}>
-            123
+            {calculation}
           </Text>
         </View>
         <View style={styles.buttons}>
@@ -119,12 +175,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  btnColumn0: {
-    flex: 2,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
   btnRow: {
     flex: 1,
     display: 'flex',
@@ -132,7 +182,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   btnText: {
-    fontSize: 30
+    fontSize: 35
   },
   result: {
     flex: 2,
@@ -145,7 +195,8 @@ const styles = StyleSheet.create({
   resultText: {
     fontSize: 30,
     color: 'white',
-    paddingRight: 6
+    paddingRight: 6,
+    fontFamily: 'monospace'
   },
   calculation: {
     flex: 1,
