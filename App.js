@@ -123,7 +123,19 @@ const App: () => React$Node = () => {
     );
   }
 
-  for (let i = 0; i < Object.keys(ops).length; i++) {
+  operations.push(
+    <TouchableOpacity key={0}
+      onPress={() => buttonPressed(Object.keys(ops)[0])}
+      onLongPress={() => {
+        setResult('');
+        setCalculation('');
+      }}
+      style={styles.btnRow}>
+      <Text style={styles.btnText}>{Object.keys(ops)[0]}</Text>
+    </TouchableOpacity>
+  );
+
+  for (let i = 1; i < Object.keys(ops).length; i++) {
     operations.push(
       <TouchableOpacity key={i}
         onPress={() => buttonPressed(Object.keys(ops)[i])}
