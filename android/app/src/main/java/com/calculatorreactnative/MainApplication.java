@@ -1,4 +1,4 @@
-package com.calculatorreactnative;
+package com.paramsid.calculator;
 
 import android.app.Application;
 import android.content.Context;

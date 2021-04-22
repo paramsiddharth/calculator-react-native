@@ -1,4 +1,4 @@
-package com.calculatorreactnative;
+package com.paramsid.calculator;
 
 import com.facebook.react.ReactActivity;
 
